@@ -1,6 +1,5 @@
 
 import mover
-import os
 
 
 type

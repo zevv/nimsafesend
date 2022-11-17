@@ -12,7 +12,6 @@ type
 
 proc pthread_mutex_init(L: var pthread_mutex_t, attr: ptr pthread_mutexattr_t) {. importc: "pthread_mutex_init", header: "<pthread.h>", noSideEffect.}
 proc pthread_mutex_lock(L: var pthread_mutex_t) {.noSideEffect, importc: "pthread_mutex_lock", header: "<pthread.h>".}
-proc pthread_mtuex_trylock(L: var pthread_mutex_t): cint {.noSideEffect, importc: "pthread_mutex_trylock", header: "<pthread.h>".}
 proc pthread_mutex_unlock(L: var pthread_mutex_t) {.noSideEffect, importc: "pthread_mutex_unlock", header: "<pthread.h>".}
 proc pthread_cond_init(cond: var pthread_cond_t, cond_attr: ptr pthread_condattr_t = nil) {. importc: "pthread_cond_init", header: "<pthread.h>", noSideEffect.}
 proc pthread_cond_wait(cond: var pthread_cond_t, lock: var pthread_mutex_t): cint {. importc: "pthread_cond_wait", header: "<pthread.h>", noSideEffect.}
