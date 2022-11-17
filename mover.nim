@@ -33,7 +33,6 @@ proc newMover*[T](): Mover[T] =
 
 
 proc send*[T](c: Mover[T], val: sink T) =
-  echo "signal"
   pthread_mutex_lock(c.mutex)
   c.val = val
   pthread_cond_signal(c.cond)
@@ -42,11 +41,10 @@ proc send*[T](c: Mover[T], val: sink T) =
 
 
 proc recv*[T](c: Mover[T]): T =
-  echo "wait"
+  c.val = nil
   pthread_mutex_lock(c.mutex)
-  let r = pthread_cond_wait(c.cond, c.mutex)
-  if r != 0:
-    echo "wait failed"
+  while c.val == nil:
+    discard pthread_cond_wait(c.cond, c.mutex)
   pthread_mutex_unlock(c.mutex)
   c.val
 
