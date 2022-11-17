@@ -35,14 +35,14 @@ template head(p: pointer): Cell =
 # Anything not ref, seq or array is isolated
 
 proc isIsolated*[T: not (ref or seq or array or object)](v: T): bool =
-  echo "- ", typeof(v), " ", v.repr
+  #echo "- ", typeof(v), " ", v.repr
   true
 
 
 # Iterate all elements of seqs and arrays
 
 proc isIsolated*[T: seq or array](vs: T): bool =
-  echo "- ",  vs.repr
+  #echo "- ",  vs.repr
   for v in vs:
     if not isIsolated(v):
       return false
@@ -52,7 +52,7 @@ proc isIsolated*[T: seq or array](vs: T): bool =
 # Iterate all fields of objects
 
 proc isIsolated*[T: object and not ref](v: T): bool =
-  echo "- ", v.repr
+  #echo "- ", v.repr
   for k, v in fieldPairs(v):
     if not isIsolated(v):
       return false
@@ -65,7 +65,7 @@ proc isIsolated*[T: ref](v: T): bool {.gcsafe.} =
   let p = cast[pointer](v)
   if p != nil:
     let rc = head(p).rc shr rcShift
-    echo "- ref ", v.repr, ", RC: ", rc
+    #echo "- ref ", v.repr, ", RC: ", rc
     # TODO: naive check
     if rc > 0:
       false
