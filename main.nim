@@ -9,13 +9,9 @@ type
 var chan: Channel[Thing]
 
 
-proc rxProc() {.gcsafe.} =
-  let t = chan.recv()
-  echo "recv a thing, @t=", cast[int](t.unsafeAddr), " @t.val=", cast[int](t.val.unsafeAddr), " t=", t.val
-  echo t.repr
-
-
 proc txProc() {.gcsafe.} =
+
+  # Create a little tree of ref objects
 
   let kid = Thing(val: 121)
 
@@ -26,20 +22,27 @@ proc txProc() {.gcsafe.} =
       ]),
     ])
 
+  # Try to send it through a "safe" channel
+
   echo "send a thing, @t=", cast[int](t.unsafeAddr), " @t.val=", cast[int](t.val.unsafeAddr), " t=", t.val
   chan.safeSend(t)
 
-  # Uncomment this line to increase RC
-
+  # Uncomment this line to increase RC of one of the child objects in the tree to make `safeSend` fail
   #echo kid.repr
+
+
+proc rxProc() {.gcsafe.} =
+  let t = chan.recv()
+  echo "recv a thing, @t=", cast[int](t.unsafeAddr), " @t.val=", cast[int](t.val.unsafeAddr), " t=", t.val
+  echo t.repr
 
 
 var thread: array[2, Thread[void]]
 
 chan.open(1)
 
-createThread(thread[0], rxProc)
-createThread(thread[1], txProc)
+createThread(thread[0], txProc)
+createThread(thread[1], rxProc)
 
 thread[0].joinThread()
 thread[1].joinThread()
