@@ -2,33 +2,36 @@
 import safesend
 
 type
-  Banana = ref object 
+  Thing = ref object 
     val: int
-    apple: array[2, Apple]
+    kids: seq[Thing]
 
-  Apple = ref object
-    val: int
-
-var chan: Channel[Banana]
+var chan: Channel[Thing]
 
 
-proc rxProc() =
+proc rxProc() {.gcsafe.} =
   let t = chan.recv()
   echo "recv a thing, @t=", cast[int](t.unsafeAddr), " @t.val=", cast[int](t.val.unsafeAddr), " t=", t.val
-  echo t.apple.repr
+  echo t.repr
 
 
-proc txProc() =
-  var a = Apple(val: 33)
-  var t = Banana(val: 42)
-  t.apple[0] = a
+proc txProc() {.gcsafe.} =
+
+  let kid = Thing(val: 121)
+
+  var t = Thing(val: 1, kids: @[
+      Thing(val: 11),
+      Thing(val: 12, kids: @[
+        kid
+      ]),
+    ])
+
   echo "send a thing, @t=", cast[int](t.unsafeAddr), " @t.val=", cast[int](t.val.unsafeAddr), " t=", t.val
   chan.safeSend(t)
 
   # Uncomment this line to increase RC
 
-  #echo a.val
-
+  #echo kid.repr
 
 
 var thread: array[2, Thread[void]]
