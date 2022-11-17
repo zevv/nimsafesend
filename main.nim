@@ -14,13 +14,7 @@ proc txProc() {.gcsafe.} =
   # Create a little tree of ref objects
 
   let kid = Thing(val: 121)
-
-  var t = Thing(val: 1, kids: @[
-      Thing(val: 11),
-      Thing(val: 12, kids: @[
-        kid
-      ]),
-    ])
+  var t = Thing(val: 1, kids: @[kid])
 
   # Try to send it through a "safe" channel
 
