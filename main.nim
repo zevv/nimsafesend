@@ -20,7 +20,6 @@ proc txProc(chan: Mover[Thing]) {.thread.} =
   # Try to send it through a "safe" channel
 
   echo "send a thing, @t=", cast[int](t.unsafeAddr), " @t.val=", cast[int](t.val.unsafeAddr), ": ", t.repr
-  sleep 10 # make sure the other party is ready to receive
   chan.send(t)
 
   # Uncomment this line to increase RC of one of the child objects in the tree to make `safeSend` fail

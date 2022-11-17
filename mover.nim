@@ -23,6 +23,7 @@ type
   Mover*[T] = ref object
     mutex: pthread_mutex_t
     cond: pthread_cond_t
+    moved: bool
     val: T
 
 
@@ -35,15 +36,15 @@ proc newMover*[T](): Mover[T] =
 proc send*[T](c: Mover[T], val: sink T) =
   pthread_mutex_lock(c.mutex)
   c.val = val
+  c.moved = true
   pthread_cond_signal(c.cond)
   pthread_mutex_unlock(c.mutex)
   wasmoved(val)
 
 
 proc recv*[T](c: Mover[T]): T =
-  c.val = nil
   pthread_mutex_lock(c.mutex)
-  while c.val == nil:
+  while not c.moved:
     discard pthread_cond_wait(c.cond, c.mutex)
   pthread_mutex_unlock(c.mutex)
   c.val
